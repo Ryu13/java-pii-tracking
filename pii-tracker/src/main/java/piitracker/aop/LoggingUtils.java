@@ -3,6 +3,7 @@ package piitracker.aop;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.aspectj.lang.ProceedingJoinPoint;
 import piitracker.annotations.PiiField;
 import piitracker.constants.PiiPart;
 import piitracker.constants.PiiPartPairing;
@@ -10,6 +11,7 @@ import piitracker.constants.PiiPartPairingType;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,6 +19,22 @@ import java.util.stream.Stream;
 
 public class LoggingUtils {
     private static final String JACOCO_EMBEDDED_FIELD = "$jacocoData";
+
+    public static String enteringPointcutMessage(ProceedingJoinPoint joinPoint) {
+        return String.format("Entering %s.%s with arg(s) = %s",
+            joinPoint.getSignature().getDeclaringType(),
+            joinPoint.getSignature().getName(),
+            Arrays.toString(joinPoint.getArgs()) // relies on dto objects implementing LoggableI and setting a proper toString
+        );
+    }
+
+    public static String leavingPointcutMessage(ProceedingJoinPoint joinPoint, Object result) {
+        return String.format("Exiting %s.%s with result = %s",
+            joinPoint.getSignature().getDeclaringType(),
+            joinPoint.getSignature().getName(),
+            result.toString()
+        );
+    }
 
     public static String toSafeString(Object obj) {
         List<String> parts = new ArrayList<>();
